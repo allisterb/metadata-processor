@@ -1,0 +1,54 @@
+﻿<Project>
+
+  <!--
+    qflat: settings shared by the .NET 10 projects (MetadataProcessor.*.Net) that build
+    MetadataProcessor.Shared for modern .NET. Upstream's net472 Core/Console projects and the
+    net8.0;net472 MsBuildTask project are left untouched.
+
+    These projects sit under qflat's ext/ fence, so qflat's root Directory.Build.props does not apply
+    its supply-chain policy (lock file, locked mode in CI, package pruning, audit) to them; it is
+    restated here. Commit each project's packages.lock.json.
+
+    Output depends on the process culture: upstream orders tables with culture-sensitive comparisons
+    (e.g. nanoTablesContext, nanoTypeDefinitionTable, nanoSignaturesTable), so en-US and cs-CZ hosts, or
+    .NET's invariant-globalization mode, emit different .pe bytes. Console.Net pins the invariant
+    culture and refuses to run in invariant-globalization mode (see CultureInitializer.cs). An in-process
+    caller of Core.Net must do the same itself.
+
+    The collation engine still matters. These projects use ICU, the .NET default on every OS, so output
+    is the same on Windows, Linux, macOS and QNX hosts. Upstream's net472 tool uses Windows NLS, which
+    orders names that differ only in punctuation (nested Outer/Inner next to Outer_X, '.', '-', ''')
+    differently, so byte parity with upstream holds only when no such names collide. CoreLibrary
+    2.0.0-preview.67's mscorlib is identical under both engines.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+    <Version>4.0.0-qflat</Version>
+    <Company>.NET nanoFramework</Company>
+    <Copyright>Copyright (c) .NET Foundation and Contributors</Copyright>
+
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RestoreLockedMode Condition="'$(CI)' == 'true' or '$(TF_BUILD)' == 'true' or '$(GITHUB_ACTIONS)' == 'true'">true</RestoreLockedMode>
+    <RestoreEnablePackagePruning>true</RestoreEnablePackagePruning>
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
+
+    <!--
+      CA1416: System.Drawing.Common is Windows-only on .NET 7 and later. MetadataProcessor.Shared uses it
+      only for embedded resources (nanoResourcesTable, nanoBitmapProcessor). Off Windows, the image probe
+      in nanoResourcesTable.GetResourceKind throws inside a catch-all, so bitmap resources are silently
+      written as plain binary instead of nanoFramework bitmaps: the build succeeds, the app fails at
+      runtime where it expects a bitmap, and the .pe differs between Windows and other hosts. String,
+      font and binary resources are unaffected, and assemblies without embedded resources never reach
+      System.Drawing.
+    -->
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+  </PropertyGroup>
+
+</Project>

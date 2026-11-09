@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- qflat: .NET 10 build of MetadataProcessor.Shared as a library, the counterpart of upstream's
+       net472 MetadataProcessor.Core: same assembly name and strong-name key, so the same identity. -->
+  <Import Project="..\MetadataProcessor.Net.props" />
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AssemblyName>nanoFramework.Tools.MetadataProcessor.Core</AssemblyName>
+    <RootNamespace>nanoFramework.Tools.MetadataProcessor.Core</RootNamespace>
+    <AssemblyTitle>nanoFramework.MetadataProcessor.Core</AssemblyTitle>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\MetadataProcessor.Core\key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <Import Project="..\MetadataProcessor.Shared\MetadataProcessor.Shared.projitems" Label="Shared" />
+
+  <!--
+    NuGet dependencies are added by the user after vetting (qflat CLAUDE.md, "Adding a NuGet package").
+    Vetted 2026-11-08. To add them, delete the two comment lines around the ItemGroup below, restore,
+    and check packages.lock.json against these contentHash values:
+      Mono.Cecil 0.11.6                      f33RkDtZO8VlGXCtmQIviOtxgnUdym9xx/b1p9h91CRGOsJFxCFOFK1FDbVt1OCf1aWwYejUFa2MOQyFWTFjbA==
+      mustache-sharp 1.0.0                   +RTxWGLH5p0ibl7XDbb8pOznAdqwxH3zic40eL1gq5xl8jZt3CFc04KSLLFWM3PgvlTzfbzDJfjzF7rCglqGAA==
+      System.Drawing.Common 10.0.14          kBe75KgVcm8soY0BPd5vTSLfC5vjd0O1YN6ApsL4qWnQiLUsOQ2k+PjWwraOI7JEp36mksavW/qz/r0NoSzYuQ==
+      Microsoft.Win32.SystemEvents 10.0.14   axfieK5mj+uS/wLYl0dhlRFWdNP1iKHhx/M6DZNXPCSve7q4TCogw//W6BWGsYhnWuSw55aqheHE0a8l8s1oTw==  (transitive)
+  -->
+  <!--
+  <ItemGroup>
+    <PackageReference Include="Mono.Cecil" Version="0.11.6" />
+    <PackageReference Include="mustache-sharp" Version="1.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.14" />
+  </ItemGroup>
+  -->
+
+</Project>

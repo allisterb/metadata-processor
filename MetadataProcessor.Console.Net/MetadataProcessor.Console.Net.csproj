@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- qflat: .NET 10 build of upstream's MetadataProcessor.Console (same Program.cs, same executable
+       name), on top of MetadataProcessor.Core.Net. Its packages arrive transitively from Core.Net. -->
+  <Import Project="..\MetadataProcessor.Net.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>nanoFramework.Tools.MetadataProcessor</AssemblyName>
+    <RootNamespace>nanoFramework.Tools.MetadataProcessor.Console</RootNamespace>
+    <AssemblyTitle>nanoFramework.MetadataProcessor.Console</AssemblyTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MetadataProcessor.Console\Program.cs" Link="Program.cs" />
+    <Compile Include="CultureInitializer.cs" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- CultureInitializer pins the invariant culture, which must collate linguistically (ICU): .NET's
+         invariant-globalization mode compares ordinally and changes table order. This only fixes the
+         runtimeconfig default; DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true still wins (measured), so
+         CultureInitializer detects that mode and exits. See MetadataProcessor.Net.props. -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MetadataProcessor.Core.Net\MetadataProcessor.Core.Net.csproj" />
+  </ItemGroup>
+
+</Project>
